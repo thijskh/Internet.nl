@@ -8,6 +8,11 @@ from celery import Task
 from celery.exceptions import SoftTimeLimitExceeded
 from django.conf import settings
 import unbound
+from .caa import RFC6844CAARDataParser
+
+
+RR_TYPE_TLSA = 52 # TODO: replace with unbound.RR_TYPE_TLSA when available
+RR_TYPE_CAA = 257 # TODO: replace with unbound.RR_TYPE_CAA when available
 
 
 class SetupUnboundContext(Task):
@@ -69,7 +74,7 @@ class SetupUnboundContext(Task):
             elif qtype == unbound.RR_TYPE_TXT:
                 return [unbound.ub_data.dname2str(d)
                         for d in resp["data"].data]
-            elif qtype == 52:  # unbound.RR_TYPE_TLSA
+            elif qtype == RR_TYPE_TLSA:
                 # RDATA is split with ';' by pyunbound.
                 dane_data = str(resp["data"]).split(";")
                 dane_records = []
@@ -82,6 +87,8 @@ class SetupUnboundContext(Task):
                     dane_records.append((cert_usage, selector, match, data))
                 resp["data"] = dane_records
                 return resp
+            elif qtype == RR_TYPE_CAA:
+                return RFC6844CAARDataParser.as_caa_list(resp["data"].as_raw_data())
             else:
                 return resp["data"].as_domain_list()
         return {}

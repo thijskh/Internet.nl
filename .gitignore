@@ -16,3 +16,5 @@
 /celerybeat.pid
 /batch_results/
 /locale_files/
+/.pytest_cache/
+/__pycache__/
