@@ -38,10 +38,9 @@ class RFC6844CAARDataParser:
         # TODO: How to handle RFC-noncompliance? E.g. excessive tag length, flags other than the critical flag set, tag
         # consisting of non-US ASCII characters, 'iodef' tag URL of scheme other than mailto, http or https, or a non-empty
         # non-domain for an 'issue' tag? Should these things be flagged up to the end user?
-        byte_stream = rdf if rdf is BinaryIO else BytesIO(
-            rdf)
+        byte_stream = rdf if rdf is BinaryIO else BytesIO(rdf)
 
-        # CAA RDATA (single rdferty) byte layout from RFC-6844 section 5.1:
+        # CAA RDATA (single property) byte layout from RFC-6844 section 5.1:
         # +0-1-2-3-4-5-6-7-|0-1-2-3-4-5-6-7-|
         # | Flags          | Tag Length = n |
         # +----------------+----------------+...+---------------+
